@@ -1,0 +1,409 @@
+{
+	"info": {
+		"_postman_id": "985d7505-8afc-41cb-ac8b-cb2755b06b06",
+		"name": "Library Copy 4",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24702084"
+	},
+	"item": [
+		{
+			"name": "AddBook",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Library\r",
+							"/**\r",
+							" * @author maxxmuthu\r",
+							" *\r",
+							" */\r",
+							"\r",
+							"// Pre-request script is for before running script\r",
+							"// Below codes are for generating dynamic random nunmbers in input\r",
+							"\r",
+							"//pm.globals.get(\"companyCode\");  \r",
+							"console.log(pm.globals.get(\"companyCode\")); // here companyCode variable is created as global in Environments\r",
+							"                                            // console.log is used to display the value in console window\r",
+							"                                            // here companyCode value is Avengers\r",
+							"const code = pm.globals.get(\"companyCode\");\r",
+							"const val = pm.variables.replaceIn('{{$randomInt}}');  // here we generating the random numbers and store it in 'val' variable\r",
+							"\r",
+							"const test = code + val;  //here we do the string concentation \r",
+							"//console.log(test);\r",
+							"\r",
+							"pm.collectionVariables.set(\"isbn\", test);  // here \"isbn\" is collection variable which created in 'Library' and we are passing the test value in \"isbn\"    \r",
+							"                                           // above line is updating this in 'Body' section for \"isbn\" property and creates random number everytime when we do this post request\r",
+							"\r",
+							"//=============================================================================                                           \r",
+							"\r",
+							"// Library Copy 1\r",
+							"\r",
+							"//pm.collectionVariables.set(\"author_name\", \"John Hickman\"); \r",
+							"        // here \"author_name\" is collection variable which created in 'Library Copy 1' and we are passing the John Hickman value in \"author_name\"    \r",
+							"        // above line is updating this in 'Body' section for \"author\" property \r",
+							"\r",
+							"\r",
+							"//=====================================================================================\r",
+							"\r",
+							"// Library Copy 4\r",
+							"// Here we are passing the data from CSV file\r",
+							"\r",
+							"pm.collectionVariables.set(\"book_name\",pm.iterationData.get(\"BookName\")); \r",
+							"pm.collectionVariables.set(\"author_name\",pm.iterationData.get(\"Author\")); \r",
+							"      // here \"book_name\" is collection variable which created in 'Library Copy 4' and we are passing the 'BookName' columnname value from CSV file \r",
+							"      // here \"author_name\" is collection variable which created in 'Library Copy 4' and we are passing the 'Author' columnname value from CSV file  \r",
+							"      // CSV file will be to load only during the runtime of collection\r",
+							"\r",
+							"console.log(pm.iterationData.get(\"BookName\"));\r",
+							"console.log(pm.iterationData.get(\"Author\"));\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Library\r",
+							"//Assertions validations - response\r",
+							"\r",
+							"const jsonData = pm.response.json();  // this line will store all the json response of body section in 'jsonData'\r",
+							"\r",
+							"//1. Validate response status code\r",
+							"pm.test(\"Validate Status Code is 200\", Function())\r",
+							"{\r",
+							"   pm.response.to.have.status(200); // this help to get request status . if it is 200 then it is pass\r",
+							"\r",
+							"}\r",
+							"\r",
+							"\r",
+							"//2. Validate particular JSON property is present in the response\r",
+							"//const jsonData = pm.response.json();  // this line will store all the json response of body section in 'jsonData'\r",
+							"\r",
+							"pm.test(\"Validate JSON property Msg is present\", Function())\r",
+							"{\r",
+							"   pm.expect(jsonData).have.property(\"Msg\"); // here checking the Msg property in body section of json\r",
+							"\r",
+							"}\r",
+							"\r",
+							"//3. Validate the success message\r",
+							"pm.test(\"Validate success message\", Function())\r",
+							"{\r",
+							"   pm.expect(jsonData.Msg).to.eql(\"successfully added\");  // here it check success message in Msg property\r",
+							"\r",
+							"}\r",
+							"\r",
+							"//4. Validate header cookies response time\r",
+							"pm.test(\"Validate header cookies response time\", Function())\r",
+							"{\r",
+							"   pm.response.to.have.header(\"Content-Type\"); // here it checking 'Content-Type' property in header section, if it contains then it will pass.\r",
+							"\r",
+							"//pm.response.headers.get(\"Content-Type\").to.eql(\"application/json;charset=UTF-8\");\r",
+							"//above line will help whether it contains expected value in 'Content-Type' property but it can't compare. hence have to follow the below one\r",
+							"\r",
+							"   pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json;charset=UTF-8\");\r",
+							"   \r",
+							"   pm.expect(pm.response.responseTime).to.be.below(200);\r",
+							"\r",
+							"}\r",
+							"\r",
+							"//5. Validate all the response in body and check whether any on the property contains specific response is present\r",
+							"pm.test(\"Validate all the response and check any propery contains\", Function())\r",
+							"{\r",
+							"   pm.expect(pm.response.text()).to.include(\"successfully added\")\r",
+							"\r",
+							"}\r",
+							"\r",
+							"//=========================================================================\r",
+							"\r",
+							"// Library Copy 1\r",
+							"//const jsonData = pm.response.json();  // this line will store all the json response of body section in 'jsonData'\r",
+							"console.log(jsonData); // this will print all the json response of body section in console\r",
+							"\r",
+							"const bookId = jsonData.ID;\r",
+							"console.log(bookId);  // this will ID property of body section in console\r",
+							"\r",
+							"pm.environment.set(\"book_id\",bookId);  // here \"book_id\" is environment variable which created under Dev_Envn in 'Environments'tab \r",
+							"                                       // and here we are passing the 'bookId' value in \"book_id\"(environment variable)   \r",
+							"                                       // above line is updating this in 'GetBook' response under Id property in Params section\r",
+							"                                       // similarly above line is updating this in 'DeleteBook' response under Id property in Body section\r",
+							"\r",
+							"\r",
+							"// To run all the request at the same time in Collections --> Library Copy 1 -> Run\r",
+							"\r",
+							"//=========================================================================\r",
+							"\r",
+							"// Library Copy 3\r",
+							"//In the library API, bookId value is caluated using \"isbn\" + \"aisle\". here we compare that value (body request) with actual value (body response)\r",
+							"\r",
+							"pm.test(\"Validate Request body section\", Function())\r",
+							"{\r",
+							"    const isbn_val = pm.collectionVariables.get(\"isbn\");  //- will get the isbn from collectionVariables\r",
+							"    var req = JSON.parse(pm.request.body.raw);  //here request body section is in raw format. hence it declare like this \"pm.request.body.raw\"\r",
+							"                                                // To covert into JSON, hence used JSON.parse\r",
+							"                                                // above line will store all the request of body section in 'req'\r",
+							"\r",
+							"    const aisle_val = req.aisle; // to get 'aisle' propery from request body section\r",
+							"    const expected_id = isbn_val + aisle_val\r",
+							"    \r",
+							"    pm.expect(expected_id).to.eql(bookId);\r",
+							"\r",
+							"}                                               \r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\r\n\"name\":\"{{book_name}}\",\r\n\"isbn\":\"{{isbn}}\",\r\n\"aisle\":\"202\",\r\n\"author\":\"{{author_name}}\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/Library/Addbook.php",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"Library",
+						"Addbook.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetBook",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Library Copy 1\r",
+							"/**\r",
+							" * @author maxxmuthu\r",
+							" *\r",
+							" */\r",
+							"\r",
+							"const getBookResponse = pm.response.json();  // this line will store all the json response of body section in 'getBookResponse'\r",
+							"console.log(getBookResponse); // this will print all the json response of body section in console\r",
+							"                              // here 'GetBook' response stored in array. As you can see it starts with '[' and end ']' in body\r",
+							"\r",
+							"//1. Validate the JSON response logic GetBook\r",
+							"\r",
+							" pm.test(\"validate the JSON response logic GetBook\", Function())\r",
+							" {\r",
+							"   pm.expect(getBookResponse[0].author).to.eql(pm.collectionVariables.get(\"author_name\"));\r",
+							"   \r",
+							"     // getBookResponse[0].author - will check the first array of getBookResponse from author property in body section\r",
+							"     // pm.collectionVariables.get(\"author_name\") - will get the author name from collectionVariables [Library Copy 4]\r",
+							"\r",
+							"   pm.expect(getBookResponse[0].isbn).to.eql(pm.collectionVariables.get(\"isbn\"));\r",
+							"\r",
+							"     // getBookResponse[0].isbn - will check the first array of getBookResponse from isbn property in body section\r",
+							"     // pm.collectionVariables.get(\"isbn\") - will get the isbn from collectionVariables [Library Copy 4]\r",
+							" }                             \r",
+							"\r",
+							"//=================================================================================\r",
+							"\r",
+							"// Library Copy 2\r",
+							"\r",
+							"// 1. Copy the JSON from Body and then convert JSON to scheme in online coverter \r",
+							"// 2. then store it in schema variable\r",
+							"\r",
+							"const schema = {\r",
+							"  \"type\": \"array\",\r",
+							"  \"items\": [\r",
+							"    {\r",
+							"      \"type\": \"object\",\r",
+							"      \"properties\": {\r",
+							"        \"book_name\": {\r",
+							"          \"type\": \"string\"\r",
+							"        },\r",
+							"        \"isbn\": {\r",
+							"          \"type\": \"string\"\r",
+							"        },\r",
+							"        \"aisle\": {\r",
+							"          \"type\": \"string\"\r",
+							"        },\r",
+							"        \"author\": {\r",
+							"          \"type\": \"string\"\r",
+							"        }\r",
+							"      },\r",
+							"      \"required\": [\r",
+							"        \"book_name\",\r",
+							"        \"isbn\",\r",
+							"        \"aisle\",\r",
+							"        \"author\"\r",
+							"      ]\r",
+							"    }\r",
+							"  ]\r",
+							"}\r",
+							"\r",
+							"// 3. Store json response of body section  \r",
+							"//const getBookResponse = pm.response.json();  // this line will store all the json response of body section in 'getBookResponse'\r",
+							"\r",
+							"// 4. Validate the json response schema in GetBook\r",
+							"// validating json response schema will ensure that all the 'property' have expected datatype and also mandatory 'property' values are present or not.\r",
+							"\r",
+							" pm.test(\"validate the JSON response schema for GetBook\", Function())\r",
+							" {\r",
+							"   pm.response.to.have.status(200);        // this help to get request status . if it is 200 then it is pass\r",
+							"   pm.response.to.have.jsonSchema(schema); // here it will validate JSON response schema\r",
+							"\r",
+							" }\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}Library/GetBook.php?ID={{book_id}}",
+					"host": [
+						"{{base_url}}Library"
+					],
+					"path": [
+						"GetBook.php"
+					],
+					"query": [
+						{
+							"key": "ID",
+							"value": "{{book_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteBook",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"/**\r",
+							" * @author maxxmuthu\r",
+							" *\r",
+							" */\r",
+							"\r",
+							"// Library Copy 2\r",
+							"\r",
+							"// 1. Copy the JSON from Body and then convert JSON to scheme in online coverter \r",
+							"// 2. then store it in schema variable\r",
+							"\r",
+							"const schema = {\r",
+							"  \"type\": \"object\",\r",
+							"  \"properties\": {\r",
+							"    \"msg\": {\r",
+							"      \"type\": \"string\"\r",
+							"    }\r",
+							"  },\r",
+							"  \"required\": [\r",
+							"    \"msg\"\r",
+							"  ]\r",
+							"}\r",
+							"\r",
+							"// 3. Store json response of body section  \r",
+							"const deleteBookResponse = pm.response.json();  // this line will store all the json response of body section in 'deleteBookResponse'\r",
+							"\r",
+							"// 4. Validate the json response schema in DeleteBook\r",
+							"// validating json response schema will ensure that all the 'property' have expected datatype and also mandatory 'property' values are present or not.\r",
+							"\r",
+							" pm.test(\"Validate the JSON response schema for DeleteBook\", Function())\r",
+							" {\r",
+							"   pm.response.to.have.status(200);        // this help to get request status . if it is 200 then it is pass\r",
+							"   pm.response.to.have.jsonSchema(schema); // here it will validate JSON response schema\r",
+							"   \r",
+							"   pm.expect(deleteBookResponse.msg).to.eql(\"book is successfully deleted\");\r",
+							"\r",
+							" }"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \r\n\"ID\" : \"{{book_id}}\"\r\n \r\n} \r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/Library/DeleteBook.php",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"Library",
+						"DeleteBook.php"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "isbn",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "author_name",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "book_name",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
